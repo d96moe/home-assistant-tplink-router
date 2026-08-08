@@ -513,16 +513,6 @@ SERVING_CELL_SENSOR_TYPES = (
         ),
     ),
     TPLinkRouterServingCellSensorConfig(
-        value=lambda cells: _cf(_lte_ca_cell(cells), 'downlink_bandwidth'),
-        description=SensorEntityDescription(
-            key="cell_lte_ca_dl_bandwidth",
-            name="LTE CA DL Bandwidth",
-            icon="mdi:antenna",
-            state_class=SensorStateClass.MEASUREMENT,
-            native_unit_of_measurement=UnitOfFrequency.MEGAHERTZ,
-        ),
-    ),
-    TPLinkRouterServingCellSensorConfig(
         value=lambda cells: _cf(_lte_ca_cell(cells), 'downlink_frequency'),
         description=SensorEntityDescription(
             key="cell_lte_ca_dl_freq",
@@ -532,26 +522,10 @@ SERVING_CELL_SENSOR_TYPES = (
             native_unit_of_measurement=UnitOfFrequency.MEGAHERTZ,
         ),
     ),
-    TPLinkRouterServingCellSensorConfig(
-        value=lambda cells: _cf(_lte_ca_cell(cells), 'rsrp'),
-        description=SensorEntityDescription(
-            key="cell_lte_ca_rsrp",
-            name="LTE CA RSRP",
-            icon="mdi:antenna",
-            state_class=SensorStateClass.MEASUREMENT,
-            native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
-        ),
-    ),
-    TPLinkRouterServingCellSensorConfig(
-        value=lambda cells: _cf(_lte_ca_cell(cells), 'rsrq'),
-        description=SensorEntityDescription(
-            key="cell_lte_ca_rsrq",
-            name="LTE CA RSRQ",
-            icon="mdi:antenna",
-            state_class=SensorStateClass.MEASUREMENT,
-            native_unit_of_measurement=SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
-        ),
-    ),
+    # CA DL bandwidth, RSRP and RSRQ deliberately omitted: confirmed live on NX200 that the
+    # router never populates these for the secondary/aggregated cell (raw API always reports
+    # 0, unlike band/ARFCN/DL frequency which are real). Only add them back if verified to
+    # report real values on some router model.
 )
 
 VPN_SERVER_SENSOR_TYPES = (
