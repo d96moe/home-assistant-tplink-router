@@ -69,24 +69,25 @@ def _scf(cells, nt, field):
 
 
 def _lte_cells(cells):
-    """All connected LTE-class serving cells (anchor + CA secondary), in the order
-    reported by the router. When 5G/NR anchoring is lost, both the anchor and any CA
-    secondary cell report network_type == _NT_LTE (3) - there is no distinct tag for
-    "LTE CA" in that state, so anchor vs. CA secondary can only be told apart by
-    position in the list, not by network_type value alone."""
+    """All connected LTE-class serving cells (anchor + CA secondary)."""
     if not cells:
         return []
     return [c for c in cells if c.network_type in (_NT_LTE, _NT_LTE_PLUS)]
 
 
 def _lte_anchor_cell(cells):
-    lte_cells = _lte_cells(cells)
-    return lte_cells[0] if lte_cells else None
+    """The primary/anchor LTE cell: connection_status == 1.
+
+    Not identified by network_type - the anchor and any secondary carrier-aggregated
+    cell can both report network_type == _NT_LTE (3), e.g. B1 (anchor) + B20
+    (secondary) with no 5G/NR involved at all. connection_status is the actual
+    primary/secondary signal (confirmed against live NX200 data)."""
+    return next((c for c in _lte_cells(cells) if c.connection_status == 1), None)
 
 
 def _lte_ca_cell(cells):
-    lte_cells = _lte_cells(cells)
-    return lte_cells[1] if len(lte_cells) > 1 else None
+    """The secondary carrier-aggregated LTE cell: connection_status == 2."""
+    return next((c for c in _lte_cells(cells) if c.connection_status == 2), None)
 
 
 def _cf(cell, field):
